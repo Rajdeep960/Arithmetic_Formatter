@@ -20,9 +20,11 @@ def arithmetic_arranger(inputList, answer=False):
     operatorList = []
     # store all second element in input list
     secondRow = []
-    lineList = ["-----"]*len(mainInputList)
+    lineList = []
     # store answer of each operator
     ansList = []
+
+    error = []
 
 
     # divide input list to firstRow, operatorList, secondRow
@@ -35,13 +37,13 @@ def arithmetic_arranger(inputList, answer=False):
         firstRow.append(firstValue)
         operatorList.append(operator)
         secondRow.append(secondValue)
+        max_num = max(len(str(firstValue)), len(str(secondValue)))
+        gap = "-"*max_num + "--"
+        lineList.append(gap)
         if len(firstValue) > 4 or len(secondValue) > 4:
-            print("Error: Numbers cannot be more than four digits.")
-            quit()
-        if operator == "*" or operator == "/":
-            print("Error: Operator must be '+' or '-'.")
-            quit()
-
+            error1 = ("Error: Numbers cannot be more than four digits.")
+            error.append(error1)
+   
 
     # calculate arithmetic oparetion of two number:
     def calculate(firstValue, secondValue, operator):
@@ -49,10 +51,11 @@ def arithmetic_arranger(inputList, answer=False):
             result = ops[operator](int(firstValue) , int(secondValue))
             return result
         except ValueError:
-            print("Error: Numbers must only contain digits")
-            quit()
-        
-
+            error2 = ("Error: Numbers must only contain digits.")
+            error.append(error2)
+        except KeyError:
+            error3 = ("Error: Operator must be '+' or '-'.")
+            error.append(error3)
 
     # append calculate answer in "ansList" list:
     def ansListValue(i):
@@ -60,65 +63,71 @@ def arithmetic_arranger(inputList, answer=False):
         ansList.append(result)
 
 
-
-    # final output format :
-    def formatStyle():
-        contacinateOps_Sec_List = [a+" "+b for a, b in zip(operatorList, secondRow)]
-        for line in [firstRow, contacinateOps_Sec_List, lineList, ansList]:
-            if len(mainInputList) == 1:
-                print("{:>8}".format(*line))
-            if len(mainInputList) == 2:
-                print("{:>8} {:>8}".format(*line))
-            if len(mainInputList) == 3:
-                print("{:>8} {:>8} {:>8}".format(*line))
-            if len(mainInputList) == 4:
-                print("{:>8} {:>8} {:>8} {:>8}".format(*line))
-            if len(mainInputList) == 5:
-                print("{:>8} {:>8} {:>8} {:>8} {:>8}".format(*line))
-
-
     # final output format without true :
-    def formatStyleWithoutTrue():
-        contacinateOps_Sec_List = [a+" "+b for a, b in zip(operatorList, secondRow)]
-        for line in [firstRow, contacinateOps_Sec_List, lineList]:
-            if len(mainInputList) == 1:
-                print("{:>8}".format(*line))
-            if len(mainInputList) == 2:
-                print("{:>8} {:>8}".format(*line))
-            if len(mainInputList) == 3:
-                print("{:>8} {:>8} {:>8}".format(*line))
-            if len(mainInputList) == 4:
-                print("{:>8} {:>8} {:>8} {:>8}".format(*line))
-            if len(mainInputList) == 5:
-                print("{:>8} {:>8} {:>8} {:>8} {:>8}".format(*line))
+    def formatStyle(answer):
+        out = ""
+        contacinateOps_Sec_List = []
+        for i in range(len(operatorList)):
+            l = operatorList[i] + " "*(len(str(lineList[i])) - len(str(secondRow[i])) - 1) + secondRow[i]
+            contacinateOps_Sec_List.append(l)
+        firstString = ""
+        secString = ""
+        lineString = ""
+        ansString = ""
+        for i in range(len(firstRow)):
+            space_between = max(len(str(firstRow[i])), len(str(secondRow[i]))) + 2
+            firstString += str(firstRow[i]).rjust(space_between)
+            secString += str(contacinateOps_Sec_List[i]).rjust(space_between)
+            lineString += str(lineList[i]).rjust(space_between)
+            ansString += str(ansList[i]).rjust(space_between)
+            if i < len(firstRow) - 1:
+                firstString += ' ' * 4
+                secString += ' ' * 4
+                lineString += ' ' * 4
+                ansString += ' ' * 4
+        if answer:
+            out += firstString + "\n" + secString + "\n" + lineString + "\n" + ansString
+            
+        else:
+            out += firstString + "\n" + secString + "\n" + lineString
+        
+        return out
 
 
     # main function
     def output(mainInputList, answer):
         if len(mainInputList) > 5:
-            print("Error: Too many problems.")
-            quit()
+            error4 = ("Error: Too many problems.")
+            error.append(error4)
+            
         for i in range(len(mainInputList)):
             dividedValue(mainInputList[i])
             ansListValue(i)
-        if answer:
-            formatStyle()
-        else :
-            formatStyleWithoutTrue()
+
+        return formatStyle(answer)
+
             
 
     # Main output function for showing IndexError 
     def mainOutput(mainInputList, answer):
         try:    
-            output(mainInputList, answer)
+            return output(mainInputList, answer)
         except IndexError:
-            print("Error: Plese input list with proper format !!!")
+            error5 = ("Error: Plese input list with proper format !!!")
+            error.append(error5)
 
 
-    mainOutput(mainInputList, answer)
+    arranged_problems = mainOutput(mainInputList, answer)
     if len(mainInputList) == 0:
-        print("Plese input value !!!")
+        error6 = ("Plese input value !!!")
+        error.append(error6)
+
+    if len(error) == 0:
+        return arranged_problems
+    else :
+        return error[0]
+        
 
 
-# arithmetic_arranger(["4 + 4", "5 + 6", "5 + 6", "5 + 6", "5 + 6"], True)
+# print(arithmetic_arranger(["4 + 1164", "5 + 6", "5545 + 66", "5 + 6", "5 + 6"],True))
 
